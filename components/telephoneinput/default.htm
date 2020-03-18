@@ -1,0 +1,83 @@
+<input type="tel" id="intl_phone_{{__SELF__.id}}" name="{{ inputName }}" class="{{ inputClass }}" value="{{ value }}" {% if inputRequired %}required="required"{% endif %}>
+{% if validateClientSide %}
+    <div class="form-error-message" data-validate-for="{{ hiddenInput ?? inputName }}" id="intl-phone-error"></div>
+{% endif %}
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        const telInput = document.querySelector("#intl_phone_{{__SELF__.id}}");
+
+        var settings = {
+            allowDropdown: {{ allowDropdown ? 'true' : 'false' }},
+            autoHideDialCode: {{ autoHideDialCode ? 'true' : 'false' }},
+            autoPlaceholder: "{{ autoPlaceholder }}",
+            customContainer: "{{ customContainer }}",
+            excludeCountries: [{% for c in excludeCountries %}"{{ c }}"{% if loop.last == false %},{% endif %}{% endfor %}],
+            formatOnDisplay: {{ formatOnDisplay ? 'true' : 'false' }},
+            geoIp: {{ geoIp ? 'true' : 'false' }},
+            hiddenInput: "{{ hiddenInput }}",
+            initialCountry: "{{ initialCountry }}",
+            nationalMode: {{ nationalMode ? 'true' : 'false' }},
+            onlyCountries: [{% for c in onlyCountries %}"{{ c }}"{% if loop.last == false %},{% endif %}{% endfor %}],
+            placeholderNumberType: "{{ placeholderNumberType }}",
+            preferredCountries: [{% for c in preferredCountries %}"{{ c }}"{% if loop.last == false %},{% endif %}{% endfor %}],
+            separateDialCode: {{ separateDialCode ? 'true' : 'false' }}
+        };
+
+        {% if value is empty %}
+            if (settings.geoIp) {
+                settings.initialCountry = "auto";
+                settings.geoIpLookup = function(success, failure) {
+                    $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+                        var countryCode = (resp && resp.country) ? resp.country : "";
+                        success(countryCode);
+                    });
+                };
+            }
+        {% endif %}
+
+
+        var iti = window.intlTelInput(
+            telInput,
+            settings
+        );
+
+        {% if formatOnType %}
+
+            telInput.addEventListener('keyup', formatIntlTelInput);
+            telInput.addEventListener('change', formatIntlTelInput);
+
+            function formatIntlTelInput() {
+                if (typeof intlTelInputUtils !== 'undefined') { // utils are lazy loaded, so must check
+                    var currentText = iti.getNumber(intlTelInputUtils.numberFormat.E164);
+                    if (typeof currentText === 'string') { // sometimes the currentText is an object :)
+                        iti.setNumber(currentText); // will autoformat because of formatOnDisplay=true
+                    }
+                }
+            }
+        {% endif %}
+
+        {% if validateClientSide %}
+            var errorMsg = document.querySelector("#intl-phone-error");
+            var errorMap = [ {% for error in errorMap %}"{{ error }}"{% if loop.last == false %}, {% endif %}{% endfor %} ];
+            var reset = function() {
+                telInput.classList.remove("error");
+                errorMsg.innerHTML = "";
+                errorMsg.classList.remove("visible");
+            };
+
+            telInput.addEventListener('blur', function() {
+                reset();
+                if (telInput.value.trim()) {
+                    if (!iti.isValidNumber()) {
+                        telInput.classList.add("error");
+                        var errorCode = iti.getValidationError();
+                        console.log(errorCode)
+                        errorMsg.innerHTML = errorMap[errorCode];
+                        errorMsg.classList.add("visible");
+                    }
+                }
+            });
+        {% endif %}
+    });
+</script>
