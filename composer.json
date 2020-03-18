@@ -1,0 +1,7 @@
+{
+    "require": {
+        "jackocnr/intl-tel-input": "^16.0",
+        "guzzlehttp/guzzle": "^6.5",
+        "giggsey/libphonenumber-for-php": "^8.11"
+    }
+}
