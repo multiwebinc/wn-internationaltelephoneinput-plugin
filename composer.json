@@ -1,7 +1,12 @@
 {
+    "name": "multiwebinc/wn-internationaltelephoneinput-plugin",
+    "type": "winter-plugin",
+    "description": "International Telephone Input plugin for Winter CMS",
+    "homepage": "https://github.com/multiwebinc/telephoneinput-plugin",
+    "keywords": ["winter", "wintercms", "builder"],
+    "license": "MIT",
     "require": {
-        "jackocnr/intl-tel-input": "^16.0",
-        "guzzlehttp/guzzle": "^6.5",
+        "guzzlehttp/guzzle": "~6.0",
         "giggsey/libphonenumber-for-php": "^8.11"
     }
 }

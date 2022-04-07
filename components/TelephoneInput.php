@@ -15,11 +15,11 @@ class TelephoneInput extends ComponentBase
 
     public function onRun()
     {
-        $this->addCss('vendor/jackocnr/intl-tel-input/build/css/intlTelInput.min.css');
+        $this->addCss('/assets/css/intlTelInput.min.css');
 
-        $this->addJs('vendor/jackocnr/intl-tel-input/build/js/intlTelInput.min.js');
+        $this->addJs('/assets/js/intlTelInput.min.js');
         if ($this->property('utilsScript')) {
-            $this->addJs('vendor/jackocnr/intl-tel-input/build/js/utils.js');
+            $this->addJs('/assets/js/utils.js');
         }
 
         $properties = array_keys($this->defineProperties());
